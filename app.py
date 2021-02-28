@@ -2,18 +2,6 @@ from datetime import datetime
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
-echo "# Learn-Flask" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/SlavaGolovatskyu/Learn-Flask.git
-git push -u origin main
-…or push an existing repository from the command line
-git remote add origin https://github.com/SlavaGolovatskyu/Learn-Flask.git
-git branch -M main
-git push -u origin main
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
