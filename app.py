@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
-hfgh
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -32,6 +32,13 @@ def home_page():
 @app.route('/about')
 def about_page():
 	return render_template('about.html')
+
+
+@app.route('/posts')
+def posts():
+	articles = Article.query.order_by(Article.date).all()
+	articles.reverse()
+	return render_template('posts.html', articles=articles)
 
 
 @app.route('/create-article', methods=['POST', 'GET'])
