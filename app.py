@@ -22,11 +22,38 @@ class Article(db.Model):
 		return '<Article %r>' % self.id
 
 
+class Account(db.Model):
+	user_id = db.Column(db.Integer, primary_key = True)
+	email = db.Column(db.String(50), nullable = False)
+	password = db.Column(db.String(100), nullable = False)
+	date_reg = db.Column(db.DateTime, default = datetime.utcnow)
+
+	def __repr__(self):
+		return '<Account %r>' % self.user_id
+
+
+
 
 @app.route('/')
 @app.route('/home')
 def home_page():
 	return render_template('index.html')
+
+
+@app.route('/sign-in', methods=['POST', 'GET'])
+def sign_in():
+	if request.method == 'POST':
+		pass
+	else:
+		return render_template('sign_in.html')
+
+
+@app.route('/sign-up', methods=['POST', 'GET'])
+def sign_up():
+	if request.method == 'POST':
+		pass
+	else:
+		return render_template('sign_up.html')
 
 
 @app.route('/about')
@@ -79,9 +106,7 @@ def create_article():
 		title = request.form['title']
 		intro = request.form['intro']
 		text = request.form['text']
-
 		article = Article(title=title, intro=intro, text=text)
-
 		try:
 			db.session.add(article)
 			db.session.commit()
