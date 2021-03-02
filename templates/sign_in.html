@@ -5,21 +5,13 @@
 {% endblock %}
 
 {% block body %} 
-<style>
-	.form-signin {
-		width: 100%;
-	    max-width: 330px;
-	    padding: 15px;
-	    margin: auto;
-	}
-</style>
 <div class="container">
-	<main class="form-signin text-center">
+	<main class="form-sign text-center">
+	  <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 	  <form method="post">
-	    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-	    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus=""><br>
-	    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required=""><br>
-	    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+	    <input type="email" name='email' class="form-control" placeholder="Email address" required="" autofocus=""><br>
+	    <input type="password" name='password' class="form-control" placeholder="password" required=""><br>
+	    <button type="submit" class="w-100 btn btn-lg btn-primary">Sign up</button>
 	  </form>
 	</main>
 </div>

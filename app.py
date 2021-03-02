@@ -32,18 +32,29 @@ class Account(db.Model):
 		return '<Account %r>' % self.user_id
 
 
-
-
 @app.route('/')
-@app.route('/home')
 def home_page():
 	return render_template('index.html')
+
+
+@app.route('/user/<int:id>')
+def success_sign_in(id):
+	account = Account.query.get(id)
+	return render_template('user_account.html', account=account)
 
 
 @app.route('/sign-in', methods=['POST', 'GET'])
 def sign_in():
 	if request.method == 'POST':
-		pass
+		email = request.form['email']
+		password = request.form['password']
+		account = Account.query.filter_by(email=email).first()	
+		try:
+			if account.password == password:
+				return redirect(f'/user/{account.user_id}')
+		except:
+			return 'Такого аккаунта не существует'
+		return 'Введен неверный пароль'
 	else:
 		return render_template('sign_in.html')
 
@@ -51,14 +62,18 @@ def sign_in():
 @app.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():
 	if request.method == 'POST':
-		pass
+		email = request.form['email']
+		password = request.form['password']
+		account = Account(email=email, password=password)
+		try:
+			db.session.add(account)
+			db.session.commit()
+			account_info = Account.query.filter_by(email=email).first()
+			return redirect(f'/user/{account_info.user_id}')
+		except:
+			return 'При создании аккаунта произошла ошибка'
 	else:
 		return render_template('sign_up.html')
-
-
-@app.route('/about')
-def about_page():
-	return render_template('about.html')
 
 
 @app.route('/posts')
