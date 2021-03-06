@@ -1,3 +1,5 @@
+import auxiliary_functions
+from validation.check_len import *
 from datetime import datetime
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -36,7 +38,6 @@ class Account(db.Model):
 def home_page():
 	return render_template('index.html')
 
-
 @app.route('/user/<int:id>')
 def success_sign_in(id):
 	account = Account.query.get(id)
@@ -51,10 +52,10 @@ def sign_in():
 		account = Account.query.filter_by(email=email).first()	
 		try:
 			if account.password == password:
-				return redirect(f'/user/{account.user_id}')
+				return redirect(url_for(f'/user/{account.user_id}', is_sign = True))
 		except:
-			return 'Такого аккаунта не существует'
-		return 'Введен неверный пароль'
+			return 'ghg'
+		return password_is_not_valid()
 	else:
 		return render_template('sign_in.html')
 
@@ -65,13 +66,21 @@ def sign_up():
 		email = request.form['email']
 		password = request.form['password']
 		account = Account(email=email, password=password)
+		is_validation = check_len_all_data(email, password)
 		try:
-			db.session.add(account)
-			db.session.commit()
-			account_info = Account.query.filter_by(email=email).first()
-			return redirect(f'/user/{account_info.user_id}')
-		except:
-			return 'При создании аккаунта произошла ошибка'
+			Checking_for_the_existence_of_an_account = Account.query.filter_by(email=email).first()
+			if Checking_for_the_existence_of_an_account.password == password:
+				return An_account_with_the_same_name_already_exists()
+		except:		
+			try:
+				if is_validation[0] and is_validation[1]:
+					db.session.add(account)
+					db.session.commit()
+					account_info = Account.query.filter_by(email=email).first()
+					return redirect(f'/user/{account_info.user_id}')
+				return return_error_message(is_validation[0], is_validation[1])
+			except:
+				return account_has_not_been_created()
 	else:
 		return render_template('sign_up.html')
 
@@ -96,7 +105,7 @@ def delete_post(id):
 		db.session.commit()
 		return redirect('/posts')
 	except:
-		return 'При удалении записи произошла ошибка'
+		return An_error_occurred_while_deleting_the_entry()
 
 
 @app.route('/posts/<int:id>/update', methods=['POST', 'GET'])
@@ -110,7 +119,7 @@ def update_post(id):
 			db.session.commit()
 			return redirect('/posts')
 		except:
-			return 'При редактировании статьи произошла ошибка'
+			return An_error_occurred_while_editing_the_article()
 	else:
 		return render_template('post_update.html', article=article)
 
@@ -127,7 +136,7 @@ def create_article():
 			db.session.commit()
 			return redirect('/posts')
 		except:
-			return 'При добавлении статьи произошла ошибка'
+			return An_error_occurred_while_adding_an_article()
 	else:
 		return render_template('create_article.html')
 
