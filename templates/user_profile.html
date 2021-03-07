@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 
-{% block body %}
-	{% macro render_profile(sep=False, id) %}
-		{% if sep %}
-			{% block title %}Аккаунт{% endblock %}
-			{% block body %} 
-				
-			{% endblock %}
-		{% endif %}
-	{% endmacro %}
+{% block title %}Аккаунт{% endblock %}
 
-	{{ render_profile(sep, id) }}
-{% endblock %}
+{% macro render_profile(sep=False, id) %}
+	{% if sep %}
+		{% block body %} 
+				
+		{% endblock %}
+	{% endif %}
+{% endmacro %}
+
+{{ render_profile(sep, id) }}

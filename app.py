@@ -1,7 +1,15 @@
 import auxiliary_functions
 from validation.check_len import *
 from datetime import datetime
-from flask import Flask, render_template, url_for, request, redirect
+
+from flask import (
+	Flask, 
+	render_template, 
+	url_for, 
+	request, 
+	redirect
+)
+
 from flask_sqlalchemy import SQLAlchemy
 
 
