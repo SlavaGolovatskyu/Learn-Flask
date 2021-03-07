@@ -7,6 +7,9 @@
 {% block body %} 
 
 <div class="container">
+	{% for i in get_flashed_messages() %}
+		<h1>{{ i }}</h1>
+	{% endfor %}
 	<main class="form-sign text-center">
 	    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 	    <form action="" method="post">

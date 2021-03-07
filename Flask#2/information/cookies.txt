@@ -1,0 +1,21 @@
+"""
+	Настройка куки
+	Во Flask для настройки куки используется метод объекта ответа set_cookie(). 
+	Синтаксис set_cookie() следующий:
+
+	set_cookie(key, value="", max_age=None)
+	key — обязательный аргумент, это название куки. value — данные, которые нужно сохранить в куки. 
+	По умолчанию это пустая строка. max_age — это срок действия куки в секундах. Если не указать срок, 
+	срок истечет при закрытии браузера пользователем.
+
+	Откроем main2.py, чтобы добавить следующий код после функции представления contact():
+
+	from flask import Flask, render_template, request, redirect, url_for, flash, make_response
+	#...
+	@app.route('/cookie/')
+	def cookie():
+	    res = make_response("Setting a cookie")
+	    res.set_cookie('foo', 'bar', max_age=60*60*24*365*2)
+	    return res
+	#...
+"""
