@@ -6,9 +6,28 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<title>{% block title %}{% endblock %}</title>
+	<style>
+		* {
+			word-wrap: break-word;
+		}
+		.form-sign {
+			width: 100%;
+			max-width: 330px;
+			padding: 15px;
+			margin: auto;
+		}
+	</style>
 </head>
 <body>
-	{% block header %}{% endblock %}
+	<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-body border-bottom shadow-sm">
+	    <h5 class="my-0 mr-md-auto fw-normal">SlavaGolovatskyu</h5>
+	    <nav class="my-2 my-md-0 mr-md-3">
+	        <a class="p-2 text-dark" href="/">Home</a>
+	        <a class="p-2 text-dark" href="/posts">Posts</a>
+	        <a href="/sign-in" class="btn btn-success">Sign In</a>
+	        <a href="/sign-up" class="btn btn-warning">Sign Up</a>
+	    </nav>
+	</header>
 	{% block body %}{% endblock %}
 </body>
 </html>
