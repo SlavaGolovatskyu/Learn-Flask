@@ -1,4 +1,7 @@
 from flask_wtf import FlaskForm
+
+# maria30_06@ukr.net
+
 from wtforms import (
     StringField,
     SubmitField,
@@ -6,6 +9,13 @@ from wtforms import (
 )
 
 from wtforms.validators import DataRequired, Email
+
+
+class ContactForm(FlaskForm):
+	email = StringField("Email: ", validators=[Email()])
+	password = StringField("Password: ", validators=[DataRequired()])
+	submit = SubmitField("Submit")
+
 
 """  
 	WTForms
@@ -70,8 +80,3 @@ from wtforms.validators import DataRequired, Email
 	>>> form3.errors
 	{'message': ['This field is required.']}
 """
-
-class ContactForm(FlaskForm):
-	email = StringField("Email: ", validators=[Email()])
-	password = StringField("Password: ", validators=[DataRequired()])
-	submit = SubmitField("Submit")

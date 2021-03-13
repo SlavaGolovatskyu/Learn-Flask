@@ -19,3 +19,33 @@
 	    return res
 	#...
 """
+
+По умолчанию куки сессии существуют до тех пор, пока не закроется браузер. Чтобы продлить жизнь куки сессии, нужно установить значение True для атрибута permanent объекта session. Когда значение permanent равно True, срок куки сессии будет равен permanent_session_lifetime. permanent_session_lifetime — это атрибут datetime.timedelta объекта Flask. Его значение по умолчанию равно 31 дню. Изменить его можно, выбрав новое значение для атрибута permanent_session_lifetime, используя ключ настройки PERMANENT_SESSION_LIFETIME.
+
+import datetime
+
+app = Flask(__name__)
+app.permanent_session_lifetime = datetime.timedelta(days=365)
+# app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
+
+
+
+Изменение данных сессии
+Примечание: перед тем как следовать инструкции, нужно удалить куки, установленные локальным хостом.
+
+Большую часть времени объект session автоматически подхватывает изменения. Но бывают случаи, например изменение структуры изменяемых данных, которые не подхватываются автоматически. Для таких ситуаций нужно установить значение True для атрибута modified объекта session. Если этого не сделать, Flask не будет отправлять обновленные куки клиенту. Следующий код показывает, как использовать атрибут modified объекта session. Откроем файл main2.py, чтобы добавить следующий код перед функцией представления delete_visitis().
+
+#...
+@app.route('/session/')
+def updating_session():
+    res = str(session.items())
+
+    cart_item = {'pineapples': '10', 'apples': '20', 'mangoes': '30'}
+    if 'cart_item' in session:
+	session['cart_item']['pineapples'] = '100'
+	session.modified = True
+    else:
+	session['cart_item'] = cart_item
+
+    return res
+#...

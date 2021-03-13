@@ -1,4 +1,5 @@
 import json
+
 from flask import (
 	Flask, 
 	render_template, 
@@ -6,8 +7,9 @@ from flask import (
 	request, 
 	redirect, 
 	request,
-	flash,
-	make_response
+	flash, 
+	make_response,
+	session
 )
 
 from forms import ContactForm
@@ -38,7 +40,6 @@ from flask_script import Manager
 	Он применяется и в других расширениях Flask. Секретный ключ должен быть безопасно сохранен. 
 	Вместо того чтобы хранить его в приложении, лучше разместить в переменной окружения. 
 	О том как это сделать — будет рассказано в следующих разделах.
-
 """
 
 SECRET_KEY = json.load(open('secret_key.json', 'r'))
@@ -57,6 +58,37 @@ manager = Manager(app)
 	* Кортежа в формате (response, status, headers) или (response, headers)
 	* Далее о каждом поподробнее.
 """
+
+
+"""
+@app.route('/visits-counter/')
+def visits():
+    if 'visits' in session:
+		session['visits'] = session.get('visits') + 1  # чтение и обновление данных сессии
+    else:
+		session['visits'] = 1  # настройка данных сессии
+    	return "Total visits: {}".format(session.get('visits'))
+
+@app.route('/delete-visits/')
+def delete_visits():
+    session.pop('visits', None)  # удаление данных о посещениях
+    return 'Visits deleted'
+"""
+
+
+"""
+Доступ к куки
+Для доступа к куки используется атрибут cookie объекта request. 
+cookie — это атрибут типа словарь, содержащий все куки, отправленные браузером.
+"""
+@app.route('/cookie/')
+def cookie():
+	if not request.cookies.get('foo'):
+		res = make_response("Setting a cookie")
+		res.set_cookie('foo', 'bar', max_age=60*60*24*365*2)
+	else:
+		res = make_response("Value of cookie foo is {}".format(request.cookies.get('foo')))
+		return res
 
 
 @app.route('/login/', methods=['get', 'post'])
