@@ -12,6 +12,9 @@ from flask import (
 	session
 )
 
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, MigrateCommand
 from forms import ContactForm
 from flask_script import Manager
 
@@ -48,7 +51,30 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY['secret_key']
 app.debug = True
 app.reload = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 manager = Manager(app)
+migrate = Migrate(app,  db)
+manager.add_command('db', MigrateCommand)
+
+
+class Account(db.Model):
+	user_id = db.Column(db.Integer, primary_key = True)
+	email = db.Column(db.String(50), nullable = False)
+	password = db.Column(db.String(100), nullable = False)
+	date_reg = db.Column(db.DateTime, default = datetime.utcnow)
+	ttt = db.Column(db.Integer, default = 1)
+	ttt1 = db.Column(db.Integer, default = 2)
+	def __repr__(self):
+		return '<Account %r>' % self.user_id
+
+class Employee(db.Model):
+    __tablename__ = 'employees'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    designation = db.Column(db.String(255), nullable=False)
+    doj = db.Column(db.Date(), nullable=False)
 
 
 """
