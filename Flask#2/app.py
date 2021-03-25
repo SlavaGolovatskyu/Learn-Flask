@@ -13,6 +13,7 @@ from flask import (
 )
 
 from datetime import datetime
+from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from forms import ContactForm
@@ -55,26 +56,24 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 manager = Manager(app)
-migrate = Migrate(app,  db)
+migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
+mail = Mail(app)
 
 
-class Account(db.Model):
-	user_id = db.Column(db.Integer, primary_key = True)
-	email = db.Column(db.String(50), nullable = False)
-	password = db.Column(db.String(100), nullable = False)
-	date_reg = db.Column(db.DateTime, default = datetime.utcnow)
-	ttt = db.Column(db.Integer, default = 1)
-	ttt1 = db.Column(db.Integer, default = 2)
+
+class User(db.Model):
+	__tablename__ = 'users'
+	id = db.Column(db.Integer(), primary_key=True)
+	name = db.Column(db.String(100))
+	username = db.Column(db.String(50), nullable=False, unique=True)
+	email = db.Column(db.String(100), nullable=False, unique=True)
+	password_hash = db.Column(db.String(100), nullable=False)
+	created_on = db.Column(db.DateTime(), default=datetime.utcnow)
+	updated_on = db.Column(db.DateTime(), default=datetime.utcnow,  onupdate=datetime.utcnow)
+
 	def __repr__(self):
-		return '<Account %r>' % self.user_id
-
-class Employee(db.Model):
-    __tablename__ = 'employees'
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    designation = db.Column(db.String(255), nullable=False)
-    doj = db.Column(db.Date(), nullable=False)
+		return "<{}:{}>".format(self.id, self.username)
 
 
 """
@@ -116,12 +115,11 @@ def cookie():
 		res = make_response("Value of cookie foo is {}".format(request.cookies.get('foo')))
 		return res
 
-
+"""
 @app.route('/login/', methods=['get', 'post'])
 def login():
 	form = ContactForm()
 	if form.validate_on_submit():
-		"""
 			Поля формы, определенные в классе формы становятся атрибутами объекта формы. 
 			Чтобы получить доступ к данным поля используется атрибут data поля формы:
 
@@ -131,7 +129,6 @@ def login():
 			form.data  # доступ ко всем данным
 			Если использовать запрос GET при посещении /contact/, метод validate_on_sumbit() 
 			вернет False. Код внутри if будет пропущен, а пользователь получит пустую HTML-форму.
-		"""
 		email = form.email.data
 		password = form.password.data
 		print(email)
@@ -141,6 +138,7 @@ def login():
 		flash("Sign in passed success", "success")
 		return redirect(url_for('login'))
 	return render_template('login.html', form=form)
+"""
 
 
 @app.route('/')
