@@ -10,7 +10,6 @@
 	    {% for category, message in  get_flashed_messages(with_categories=true) %}
 			<spam class="{{ category }}">{{ message }}</spam>
 	    {% endfor %}
-
 	    <form action="" method="post">
 			{{ form.csrf_token }}
 			<p>

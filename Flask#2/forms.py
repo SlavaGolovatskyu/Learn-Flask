@@ -8,8 +8,11 @@ from wtforms import (
     PasswordField
 )
 
-from wtforms.validators import DataRequired, Email
-
+from wtforms.validators import (
+	DataRequired, 
+	Email, 
+	Length
+)
 
 class ContactForm(FlaskForm):
 	email = StringField("Email: ", validators=[Email(), DataRequired()])
@@ -18,10 +21,69 @@ class ContactForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-	username = StringField("Username", validators=[DataRequired()])
-	password = PasswordField("Password", validators=[DataRequired()])
-	remember = BooleanField("Remember Me")
-	submit = SubmitField()
+    username = StringField("Username", validators=[DataRequired(), Length(min=1, max=50, message=None)])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=50, message=None)])
+    remember = BooleanField("Remember Me")
+    submit = SubmitField()
+
+"""
+	Custom validators
+We will step through the evolution of writing a length-checking validator similar to the built-in Length validator, starting from a case-specific one to a generic reusable validator.
+
+Let’s start with a simple form with a name field and its validation:
+
+class MyForm(Form):
+    name = TextField('Name', [Required()])
+
+    def validate_name(form, field):
+        if len(field.data) > 50:
+            raise ValidationError('Name must be less than 50 characters')
+Above, we show the use of an in-line validator to do validation of a single field. In-line validators are good for validating special cases, but are not easily reusable. If, in the example above, the name field were to be split into two fields for first name and surname, you would have to duplicate your work to check two lengths.
+
+So let’s start on the process of splitting the validator out for re-use:
+
+def my_length_check(form, field):
+    if len(field.data) > 50:
+        raise ValidationError('Field must be less than 50 characters')
+
+class MyForm(Form):
+    name = TextField('Name', [Required(), my_length_check])
+All we’ve done here is move the exact same code out of the class and as a function. Since a validator can be any callable which accepts the two positional arguments form and field, this is perfectly fine, but the validator is very special-cased.
+
+Instead, we can turn our validator into a more powerful one by making it a factory which returns a callable:
+
+def length(min=-1, max=-1):
+    message = 'Must be between %d and %d characters long.' % (min, max)
+
+    def _length(form, field):
+        l = field.data and len(field.data) or 0
+        if l < min or max != -1 and l > max:
+            raise ValidationError(message)
+
+    return _length
+
+class MyForm(Form):
+    name = TextField('Name', [Required(), length(max=50)])
+Now we have a configurable length-checking validator that handles both minimum and maximum lengths. When length(max=50) is passed in your validators list, it returns the enclosed _length function as a closure, which is used in the field’s validation chain.
+
+This is now an acceptable validator, but we recommend that for reusability, you use the pattern of allowing the error message to be customized via passing a message= parameter:
+
+class Length(object):
+    def __init__(self, min=-1, max=-1, message=None):
+        self.min = min
+        self.max = max
+        if not message:
+            message = u'Field must be between %i and %i characters long.' % (min, max)
+        self.message = message
+
+    def __call__(self, form, field):
+        l = field.data and len(field.data) or 0
+        if l < self.min or self.max != -1 and l > self.max:
+            raise ValidationError(self.message)
+
+length = Length
+"""
+
 
 """  
 	WTForms
