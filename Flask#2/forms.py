@@ -1,21 +1,27 @@
 from flask_wtf import FlaskForm
 
-# maria30_06@ukr.net
-
 from wtforms import (
     StringField,
     SubmitField,
-    TextAreaField
+    TextAreaField,
+    BooleanField,
+    PasswordField
 )
 
 from wtforms.validators import DataRequired, Email
 
 
 class ContactForm(FlaskForm):
-	email = StringField("Email: ", validators=[Email()])
+	email = StringField("Email: ", validators=[Email(), DataRequired()])
 	password = StringField("Password: ", validators=[DataRequired()])
 	submit = SubmitField("Submit")
 
+
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
+    submit = SubmitField()
 
 """  
 	WTForms

@@ -12,12 +12,21 @@ from flask import (
 	session
 )
 
+from flask_login import (
+	LoginManager, 
+	UserMixin,
+	login_required,
+	login_user, 
+	current_user
+)
+
+from forms import ContactForm, LoginForm
 from datetime import datetime
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
-from forms import ContactForm
 from flask_script import Manager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Мы можем изменить путь к templates например если у нас папка с другим именем
 # Мы просто делаем вот так: app = Flask(__name__, template_folder="jinja_templates")
@@ -59,10 +68,12 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 mail = Mail(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
 	__tablename__ = 'users'
 	id = db.Column(db.Integer(), primary_key=True)
 	name = db.Column(db.String(100))
@@ -72,8 +83,18 @@ class User(db.Model):
 	created_on = db.Column(db.DateTime(), default=datetime.utcnow)
 	updated_on = db.Column(db.DateTime(), default=datetime.utcnow,  onupdate=datetime.utcnow)
 
+	def set_password(self, password):
+		self.password_hash = generate_password_hash(password)
+
+	def check_password(self, password):
+		return check_password_hash(self.password_hash, password)
+
 	def __repr__(self):
 		return "<{}:{}>".format(self.id, self.username)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
 
 
 """
@@ -139,6 +160,26 @@ def login():
 		return redirect(url_for('login'))
 	return render_template('login.html', form=form)
 """
+
+
+@app.route('/admin/')
+@login_required
+def admin():
+    return render_template('admin.html')
+
+
+@app.route('/login/', methods=['post', 'get'])
+def login():
+	form = LoginForm()
+	if form.validate_on_submit():
+		user = db.session.query(User).filter(User.username == form.username.data).first()
+		if user and user.check_password(form.password.data):
+			login_user(user, remember=form.remember.data)
+			return redirect(url_for('admin'))
+
+		flash("Invalid username/password", 'error')
+		return redirect(url_for('login'))
+	return render_template('login.html', form=form)
 
 
 @app.route('/')

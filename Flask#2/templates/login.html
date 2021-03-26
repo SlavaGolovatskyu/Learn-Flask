@@ -6,21 +6,38 @@
 
 {% block body %} 
 <div class="container">
-	{% for i in get_flashed_messages() %}
-		<h1>{{ i }}</h1>
-	{% endfor %}
 	<main class="form-sign text-center">
-	    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+	    {% for category, message in  get_flashed_messages(with_categories=true) %}
+			<spam class="{{ category }}">{{ message }}</spam>
+	    {% endfor %}
+
 	    <form action="" method="post">
-		  	{{ form.csrf_token() }}
-		  	{% for field in form if field.name != "csrf_token" %}
-				<p>{{ field.label() }}</p>
-				<p>{{ field }}
-				    {% for error in field.errors %}
-						{{ error }}
-				    {% endfor %}
-				</p>
-		    {% endfor %}
+			{{ form.csrf_token }}
+			<p>
+			    {{ form.username.label() }}
+			    {{ form.username() }}
+			    {% if form.username.errors %}
+					{% for error in form.username.errors %}
+				    	{{ error }}
+					{% endfor %}
+			    {% endif %}
+			</p>
+			<p>
+			    {{ form.password.label() }}
+			    {{ form.password() }}
+			    {% if form.password.errors %}
+					{% for error in form.password.errors %}
+				    	{{ error }}
+					{% endfor %}
+			    {% endif %}
+			</p>
+			<p>
+			    {{ form.remember.label() }}
+			    {{ form.remember() }}
+			</p>
+			<p>
+			    {{ form.submit() }}
+			</p>
 	    </form>
 	</main>
 </div>
